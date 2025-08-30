@@ -1,6 +1,6 @@
 ---
 layout: post
-author: Name
+author: Leong Jia Qi 
 title: "Applied Data Science Project Documentation"
 categories: ITD214
 ---
@@ -14,6 +14,8 @@ The sub-objective I worked on is investigating how lifestyle factors (sleep, exe
 
 ## Work Accomplished
 The dataset I used contained 3,000 entries across 12 columns, with 11 of the columns complete and one column, Mental Health Condition, containing 595 missing values. 
+
+![df info_readdata](https://github.com/user-attachments/assets/06396e50-26c7-470e-8cc2-a95ff6eade81)
 
 ### Data Preparation
 Initial preparation involved cleaning categorical data to ensure consistency, for example verifying that categories like “Exercise Level” did not contain duplicates or misspellings. I then created a binary target variable representing whether a person had a mental health condition (1) or not (0), and removed the original multi-class target column. Because the dataset was imbalanced, with significantly more people recorded as having a condition, I applied resampling methods such as SMOTE and SMOTEENN to create a balanced dataset for training. To enrich the dataset, I also engineered features such as interaction terms (for example, low sleep combined with high stress) and binned continuous variables like sleep hours into categories of low, normal, and high.
