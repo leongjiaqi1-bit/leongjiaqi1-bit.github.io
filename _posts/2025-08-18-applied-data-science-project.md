@@ -13,18 +13,53 @@ To develop a data-driven solution that identifies early warning signs and key co
 The sub-objective I worked on is investigating how lifestyle factors (sleep, exercise, screen time etc.) contribute to mental health conditions. 
 
 ## Work Accomplished
-The dataset I used contained 3,000 entries across 12 columns, with 11 of the columns complete and one column, Mental Health Condition, containing 595 missing values. 
+The dataset I used contained **3,000 entries across 12 columns**, with 11 of the columns complete and one column, Mental Health Condition, containing 595 missing values in which they represents no mental health condition. 
 
 ![df info_readdata](https://github.com/user-attachments/assets/06396e50-26c7-470e-8cc2-a95ff6eade81)
 
 ### Data Preparation
 Initial preparation involved cleaning categorical data to ensure consistency, for example verifying that categories like “Exercise Level” did not contain duplicates or misspellings. I then created a binary target variable representing whether a person had a mental health condition (1) or not (0), and removed the original multi-class target column. Because the dataset was imbalanced, with significantly more people recorded as having a condition, I applied resampling methods such as SMOTE and SMOTEENN to create a balanced dataset for training. To enrich the dataset, I also engineered features such as interaction terms (for example, low sleep combined with high stress) and binned continuous variables like sleep hours into categories of low, normal, and high.
 
+<img width="773" height="306" alt="data cleaning" src="https://github.com/user-attachments/assets/b391cf5e-468f-42c2-83a5-cb725887981d" />
+*Data cleaning using fuzzywuzzy* 
+
+![smoteenn](https://github.com/user-attachments/assets/cc9bb3a7-648a-4eb3-9df7-dfe5080f0e0f)
+*Balancing dataset via SMOTEENN*
+
 ### Modelling
-For the modelling stage, I split the dataset into 70% training and 30% testing, with stratification to preserve class ratios. Two classification models were implemented: Logistic Regression and Random Forest. Logistic Regression served as a baseline model that provided interpretability, while Random Forest was chosen for its ability to capture non-linear relationships and variable interactions. To further improve model performance, I conducted hyperparameter tuning on the Random Forest using GridSearchCV with 3-fold cross-validation. A total of 144 parameter combinations were tested, and the best configuration was found with 100 estimators, a maximum depth of 20, maximum features set to ‘sqrt,’ a minimum of one sample per leaf, and a minimum of five samples per split.
+For the modelling stage, I split the dataset into 70% training and 30% testing, with stratification to preserve class ratios. Two classification models were implemented: Logistic Regression and Random Forest. Logistic Regression served as a baseline model that provided interpretability, while Random Forest was chosen for its ability to capture non-linear relationships and variable interactions. 
+
+![LG_featureimportance](https://github.com/user-attachments/assets/9e60da2e-1ed3-438b-9e80-df644c89b575)
+*Logistic Regression - Feature Importance*
+Screen time per day, social interaction, and work hours per week have positive coefficients, meaning higher values increase the likelihood of being classified with a mental health condition. This aligns with my business objective of testing lifestyle impacts, as excessive screen time and long work hours are linked to higher risk.
+
+In contrast, factors like exercise, sleep quality, and balanced diets tend to have negative coefficients, meaning they reduce the likelihood of a mental health condition. This reinforces the protective effect of healthy lifestyle habits.
+
+Interestingly, junk food diet type has one of the strongest negative coefficients, which may reflect either data imbalance or an indirect effect which also highlights the importance of validating findings before drawing firm health recommendations.
+
+Overall, this confirms that lifestyle factors do contribute to mental health outcomes, and the logistic regression model helps us see exactly which habits push risk up or down.
+
+![RF_featureimportance](https://github.com/user-attachments/assets/a377edee-ee0b-4b68-8d84-ceb4fd7f22e6)
+*Random Forest - Feature Importance*
+This tells us which lifestyle factors had the greatest impact on predicting mental health conditions.
+The top 3 drivers were:
+  1. **Happiness Score** – individuals with lower happiness scores were more likely to be classified as having a condition.
+  2. **Social Interaction** – reduced interaction strongly increased the likelihood of mental health issues.
+  3. **Screen Time per Day** – excessive screen time was linked to higher risk.
+
+To further improve model performance, I conducted hyperparameter tuning on the Random Forest using **GridSearchCV with 3-fold cross-validation**. A total of 144 parameter combinations were tested, and the best configuration was found with 100 estimators, a maximum depth of 20, maximum features set to ‘sqrt,’ a minimum of one sample per leaf, and a minimum of five samples per split.
+
+![bestparameters](https://github.com/user-attachments/assets/b2a1cf31-d427-4802-b60f-87ed89a231e3)
+*Best parameters*
 
 ### Evaluation
 Evaluation results showed clear differences between the models. Logistic Regression achieved an accuracy of 0.48, with a precision of 0.80, recall of 0.47, F1-score of 0.59, and ROC-AUC of 0.514. While it was somewhat effective at identifying individuals with no condition, it struggled with detecting those with conditions, resulting in 382 false negatives and only 339 true positives. The baseline Random Forest improved on this, achieving an accuracy of 0.59, precision of 0.81, recall of 0.64, F1-score of 0.71, and ROC-AUC of 0.5096. It correctly identified 459 true positives while reducing false negatives to 262. The tuned Random Forest performed slightly better still, with an accuracy of 0.60, precision of 0.81, recall of 0.64, F1-score of 0.72, and ROC-AUC of 0.5172. Importantly, the tuned model further reduced false negatives, capturing more individuals with actual conditions.
+
+![results_tunedRF](https://github.com/user-attachments/assets/57ec9a5f-6281-4c5a-a382-56af0547ade3)
+*Results of tuned Random Forest*
+
+![barchart_modelcomparison](https://github.com/user-attachments/assets/3a480ffc-a9d9-41b7-9f39-359b5aff3faa)
+*Performance comparison between Logistic Regression & Tuned Random Forest*
 
 In summary, Random Forest consistently outperformed Logistic Regression, especially in recall and F1-score. This made it the stronger model for supporting our business objective of identifying individuals at risk based on lifestyle factors.
 
@@ -38,7 +73,7 @@ Based on these findings, I recommend enriching the dataset with additional data 
 
 Applying machine learning to sensitive topics like mental health inevitably raises ethical considerations. Privacy is paramount, as mental health and lifestyle data are highly personal and must be anonymised to avoid misuse or discrimination. Fairness is another concern; the original dataset was imbalanced, which could bias predictions toward over-detecting conditions. To mitigate this, I applied SMOTE and SMOTEENN resampling, but continuous monitoring is needed to ensure fairness across different demographic groups.
 
-Accuracy also poses an ethical challenge, since the models achieved only modest ROC-AUC scores of around 0.51, suggesting limited separability between classes. Deploying such models without improvement could lead to harmful misclassifications. Accountability must also be considered: predictions should never be used in isolation but rather accompanied by human oversight, particularly when informing mental health decisions. Finally, transparency is essential for trust. Logistic Regression provided interpretable coefficients that highlighted the direction of lifestyle factors (e.g., higher screen time and work hours increased risk, while better sleep and exercise reduced it). Such interpretability is critical for explaining predictions to stakeholders and ensuring ethical adoption.
+Accuracy also poses an ethical challenge, since the models achieved only modest ROC-AUC scores of around 0.51, suggesting limited separability between classes. Deploying such models without improvement could lead to harmful misclassifications. Accountability must also be considered: predictions should never be used in isolation but rather accompanied by human oversight, particularly when informing mental health decisions. Finally, transparency is essential for trust. Logistic Regression provided interpretable coefficients that highlighted the direction of lifestyle factors (eg. higher screen time and work hours increased risk, while better sleep and exercise reduced it). Such interpretability is critical for explaining predictions to stakeholders and ensuring ethical adoption.
 
 ## Source Codes and Datasets
 Upload your model files and dataset into a GitHub repo and add the link here. 
