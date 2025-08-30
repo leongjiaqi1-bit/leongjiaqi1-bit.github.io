@@ -21,9 +21,12 @@ The dataset I used contained **3,000 entries across 12 columns**, with 11 of the
 Initial preparation involved cleaning categorical data to ensure consistency, for example verifying that categories like “Exercise Level” did not contain duplicates or misspellings. I then created a binary target variable representing whether a person had a mental health condition (1) or not (0), and removed the original multi-class target column. Because the dataset was imbalanced, with significantly more people recorded as having a condition, I applied resampling methods such as SMOTE and SMOTEENN to create a balanced dataset for training. To enrich the dataset, I also engineered features such as interaction terms (for example, low sleep combined with high stress) and binned continuous variables like sleep hours into categories of low, normal, and high.
 
 <img width="773" height="306" alt="data cleaning" src="https://github.com/user-attachments/assets/b391cf5e-468f-42c2-83a5-cb725887981d" />
+
 *Data cleaning using fuzzywuzzy* 
 
+
 ![smoteenn](https://github.com/user-attachments/assets/cc9bb3a7-648a-4eb3-9df7-dfe5080f0e0f)
+
 *Balancing dataset via SMOTEENN*
 
 ### Modelling
@@ -31,6 +34,7 @@ For the modelling stage, I split the dataset into 70% training and 30% testing, 
 
 ![LG_featureimportance](https://github.com/user-attachments/assets/9e60da2e-1ed3-438b-9e80-df644c89b575)
 *Logistic Regression - Feature Importance*
+
 Screen time per day, social interaction, and work hours per week have positive coefficients, meaning higher values increase the likelihood of being classified with a mental health condition. This aligns with my business objective of testing lifestyle impacts, as excessive screen time and long work hours are linked to higher risk.
 
 In contrast, factors like exercise, sleep quality, and balanced diets tend to have negative coefficients, meaning they reduce the likelihood of a mental health condition. This reinforces the protective effect of healthy lifestyle habits.
@@ -41,6 +45,7 @@ Overall, this confirms that lifestyle factors do contribute to mental health out
 
 ![RF_featureimportance](https://github.com/user-attachments/assets/a377edee-ee0b-4b68-8d84-ceb4fd7f22e6)
 *Random Forest - Feature Importance*
+
 This tells us which lifestyle factors had the greatest impact on predicting mental health conditions.
 The top 3 drivers were:
   1. **Happiness Score** – individuals with lower happiness scores were more likely to be classified as having a condition.
@@ -56,6 +61,7 @@ To further improve model performance, I conducted hyperparameter tuning on the R
 Evaluation results showed clear differences between the models. Logistic Regression achieved an accuracy of 0.48, with a precision of 0.80, recall of 0.47, F1-score of 0.59, and ROC-AUC of 0.514. While it was somewhat effective at identifying individuals with no condition, it struggled with detecting those with conditions, resulting in 382 false negatives and only 339 true positives. The baseline Random Forest improved on this, achieving an accuracy of 0.59, precision of 0.81, recall of 0.64, F1-score of 0.71, and ROC-AUC of 0.5096. It correctly identified 459 true positives while reducing false negatives to 262. The tuned Random Forest performed slightly better still, with an accuracy of 0.60, precision of 0.81, recall of 0.64, F1-score of 0.72, and ROC-AUC of 0.5172. Importantly, the tuned model further reduced false negatives, capturing more individuals with actual conditions.
 
 ![results_tunedRF](https://github.com/user-attachments/assets/57ec9a5f-6281-4c5a-a382-56af0547ade3)
+
 *Results of tuned Random Forest*
 
 ![barchart_modelcomparison](https://github.com/user-attachments/assets/3a480ffc-a9d9-41b7-9f39-359b5aff3faa)
